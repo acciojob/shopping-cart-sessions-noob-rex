@@ -1,5 +1,3 @@
-// This is the boilerplate code given for you
-// You can modify this code
 // Product data
 const products = [
   { id: 1, name: "Product 1", price: 10 },
@@ -9,30 +7,61 @@ const products = [
   { id: 5, name: "Product 5", price: 50 },
 ];
 
-// DOM elements
-const productList = document.getElementById("product-list");
-
-// Render product list
+// Function to render product list
 function renderProducts() {
+  const productList = document.getElementById("product-list");
   products.forEach((product) => {
     const li = document.createElement("li");
-    li.innerHTML = `${product.name} - $${product.price} <button class="add-to-cart-btn" data-id="${product.id}">Add to Cart</button>`;
+    li.textContent = `${product.name} - $${product.price}`;
+    const button = document.createElement("button");
+    button.textContent = "Add to Cart";
+    button.onclick = () => addToCart(product);
+    li.appendChild(button);
     productList.appendChild(li);
   });
 }
 
-// Render cart list
-function renderCart() {}
+// Function to render shopping cart
+function renderCart() {
+  const cartList = document.getElementById("cart-list");
+  cartList.innerHTML = ""; // Clear the current list
+  const cart = getCartFromSession();
 
-// Add item to cart
-function addToCart(productId) {}
+  if (cart.length === 0) {
+    cartList.innerHTML = "<li>Your cart is empty.</li>";
+    return;
+  }
 
-// Remove item from cart
-function removeFromCart(productId) {}
+  cart.forEach((item) => {
+    const li = document.createElement("li");
+    li.textContent = `${item.name} - $${item.price}`;
+    cartList.appendChild(li);
+  });
+}
 
-// Clear cart
-function clearCart() {}
+// Function to add an item to the cart
+function addToCart(product) {
+  const cart = getCartFromSession();
+  cart.push(product);
+  sessionStorage.setItem("cart", JSON.stringify(cart));
+  renderCart();
+}
 
-// Initial render
+// Function to clear the cart
+function clearCart() {
+  sessionStorage.removeItem("cart");
+  renderCart();
+}
+
+// Function to get cart data from session storage
+function getCartFromSession() {
+  const cart = sessionStorage.getItem("cart");
+  return cart ? JSON.parse(cart) : [];
+}
+
+// Event listener for the clear cart button
+document.getElementById("clear-cart-btn").addEventListener("click", clearCart);
+
+// Initial setup: Render products and cart
 renderProducts();
 renderCart();
